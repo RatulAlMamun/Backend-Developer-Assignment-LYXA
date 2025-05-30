@@ -10,12 +10,14 @@ import { DatabaseModule } from './database/database.module';
 import { getModelToken } from '@nestjs/mongoose';
 import { Product, ProductModel } from './schemas/product.schema';
 import { Connection } from 'mongoose';
+import { RabbitSubscriberService } from 'src/rabbitmq/subscriber.service';
 
 @Module({
   imports: [DatabaseModule],
   controllers: [ProductController],
   providers: [
     ProductService,
+    RabbitSubscriberService,
     {
       provide: 'AUTH_SERVICE',
       useFactory: (): ClientProxy => {
@@ -24,7 +26,7 @@ import { Connection } from 'mongoose';
           options: {
             urls: [process.env.RABBITMQ_URL || 'amqp://rabbitmq:5672'],
             queue: 'auth_queue',
-            queueOptions: { durable: false },
+            queueOptions: { durable: true },
           },
         });
       },

@@ -11,7 +11,7 @@ export class RabbitPublisherService {
   }
 
   async publish(event: string, data: any) {
-    await this.channel.assertExchange('main', 'topic', { durable: false });
+    await this.channel.assertExchange('main', 'topic', { durable: true });
     this.channel.publish('main', event, Buffer.from(JSON.stringify(data)));
   }
 }
