@@ -6,9 +6,13 @@ import {
   ClientProxyFactory,
   Transport,
 } from '@nestjs/microservices';
+import { DatabaseModule } from './database/database.module';
+import { getModelToken } from '@nestjs/mongoose';
+import { Product, ProductModel } from './schemas/product.schema';
+import { Connection } from 'mongoose';
 
 @Module({
-  imports: [],
+  imports: [DatabaseModule],
   controllers: [ProductController],
   providers: [
     ProductService,
@@ -24,6 +28,12 @@ import {
           },
         });
       },
+    },
+    {
+      provide: getModelToken(Product.name),
+      useFactory: (connection: Connection) =>
+        connection.model(Product.name, ProductModel.schema),
+      inject: ['DATABASE_CONNECTION'],
     },
   ],
 })
