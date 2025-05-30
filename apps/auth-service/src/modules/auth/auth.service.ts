@@ -55,4 +55,26 @@ export class AuthService {
       refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
     };
   }
+
+  async refreshToken(token: string) {
+    try {
+      if (!token) throw new Error();
+      const decoded = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET || 'supersecret',
+      });
+      const payload = {
+        sub: decoded.sub,
+        email: decoded.email,
+        role: decoded.role,
+      };
+
+      return {
+        message: 'Token refreshed',
+        accessToken: this.jwtService.sign(payload, { expiresIn: '15m' }),
+        refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
+      };
+    } catch (e) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
 }
