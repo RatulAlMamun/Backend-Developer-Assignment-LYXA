@@ -6,6 +6,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { DatabaseModule } from '../database/database.module';
 import { JwtModule } from '@nestjs/jwt';
+import { RabbitPublisherService } from 'src/rabbitmq/publisher.service';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { JwtModule } from '@nestjs/jwt';
   controllers: [AuthController],
   providers: [
     AuthService,
+    RabbitPublisherService,
     {
       provide: getModelToken(User.name),
       useFactory: (connection: Connection) =>

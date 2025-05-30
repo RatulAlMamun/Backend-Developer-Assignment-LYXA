@@ -10,12 +10,14 @@ import { User } from '../../schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
+import { RabbitPublisherService } from 'src/rabbitmq/publisher.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private readonly jwtService: JwtService,
+    private publisher: RabbitPublisherService,
   ) {}
 
   async register(
@@ -34,6 +36,12 @@ export class AuthService {
       password: hashedPassword,
     });
     const { password, ...userWithoutPassword } = createdUser.toObject();
+
+    await this.publisher.publish('user.created', {
+      id: createdUser._id,
+      email: createdUser.email,
+      name: createdUser.name,
+    });
 
     return {
       message: 'User registered successfully',
