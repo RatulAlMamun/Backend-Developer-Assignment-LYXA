@@ -18,9 +18,14 @@ logs:
 auth:
 	docker-compose exec auth-service sh
 
+auth-logs:
+	docker-compose logs --follow auth-service
 
 product:
 	docker-compose exec product-service sh
+
+product-logs:
+	docker-compose logs --follow product-service
 
 clean:
 	docker-compose down -v --remove-orphans
