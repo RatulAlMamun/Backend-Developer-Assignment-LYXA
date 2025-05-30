@@ -45,7 +45,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - auth-data:/data/db
+      - auth-data:/data/authDb
 
   mongo-product:
     image: mongo:6
@@ -53,7 +53,7 @@ services:
     ports:
       - "27018:27017"
     volumes:
-      - product-data:/data/db
+      - product-data:/data/productDb
 
   rabbitmq:
     image: rabbitmq:3-management
