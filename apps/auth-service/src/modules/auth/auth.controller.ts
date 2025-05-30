@@ -12,6 +12,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { Response, Request } from 'express';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 
 @Controller('auth')
 export class AuthController {
@@ -72,5 +73,10 @@ export class AuthController {
   logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('refreshToken');
     return { message: 'Logged out successfully' };
+  }
+
+  @MessagePattern('auth:validate')
+  async handleTokenValidation(@Payload() payload: any) {
+    return this.authService.validate(payload);
   }
 }

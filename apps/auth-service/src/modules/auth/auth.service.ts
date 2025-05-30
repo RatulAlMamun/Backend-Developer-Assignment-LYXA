@@ -92,4 +92,16 @@ export class AuthService {
       .select('-password');
     return user;
   }
+
+  async validate(payload: any) {
+    const token = payload.Authorization?.replace('Bearer ', '');
+    if (!token) throw new Error('No token provided');
+
+    try {
+      const decoded = this.jwtService.verify(token);
+      return decoded;
+    } catch (err) {
+      throw new Error('Invalid token');
+    }
+  }
 }
