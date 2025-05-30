@@ -1,8 +1,17 @@
-import { Body, Controller, Post, Res, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Res,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { Response, Request } from 'express';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -50,5 +59,18 @@ export class AuthController {
     });
 
     return { message, accessToken };
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('me')
+  me(@Req() req: any) {
+    return this.authService.me(req.user);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('logout')
+  logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('refreshToken');
+    return { message: 'Logged out successfully' };
   }
 }

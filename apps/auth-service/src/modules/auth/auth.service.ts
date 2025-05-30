@@ -77,4 +77,11 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
+
+  async me(reqUser: any) {
+    const user = await this.userModel
+      .findOne({ email: reqUser.email })
+      .select('-password');
+    return user;
+  }
 }
