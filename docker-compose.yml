@@ -1,0 +1,67 @@
+version: "3.8"
+
+services:
+  auth-service:
+    build:
+      context: ./apps/auth-service
+      dockerfile: Dockerfile.dev
+    container_name: auth-service
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo-auth
+      - rabbitmq
+    environment:
+      - PORT=3000
+      - MONGO_URI=mongodb://mongo-auth:27017/auth-db
+      - RABBITMQ_URL=amqp://rabbitmq
+    volumes:
+      - ./apps/auth-service:/app
+      - /app/node_modules
+
+  product-service:
+    build:
+      context: ./apps/product-service
+      dockerfile: Dockerfile.dev
+    container_name: product-service
+    restart: always
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo-product
+      - rabbitmq
+    environment:
+      - PORT=3001
+      - MONGO_URI=mongodb://mongo-product:27017/product-db
+      - RABBITMQ_URL=amqp://rabbitmq
+    volumes:
+      - ./apps/product-service:/app
+      - /app/node_modules
+
+  mongo-auth:
+    image: mongo:6
+    container_name: mongo-auth
+    ports:
+      - "27017:27017"
+    volumes:
+      - auth-data:/data/db
+
+  mongo-product:
+    image: mongo:6
+    container_name: mongo-product
+    ports:
+      - "27018:27017"
+    volumes:
+      - product-data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+volumes:
+  auth-data:
+  product-data:
